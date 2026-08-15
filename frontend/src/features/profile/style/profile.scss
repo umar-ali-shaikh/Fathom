@@ -1,0 +1,209 @@
+.profile-page {
+    width: 100%;
+    max-width: 700px;
+    margin-inline: auto;
+    padding: var(--space-6) var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+
+    .profile-status {
+        color: var(--text-secondary);
+        text-align: center;
+        padding-block: var(--space-8);
+
+        &-error {
+            color: var(--danger);
+        }
+    }
+}
+
+.profile-header {
+    display: flex;
+    gap: var(--space-6);
+    align-items: flex-start;
+
+    .avatar-wrapper {
+        width: 5.5rem;
+        aspect-ratio: 1 / 1;
+        border-radius: var(--radius-full);
+        overflow: hidden;
+        flex-shrink: 0;
+        border: 2px solid var(--border-subtle);
+    }
+
+    &-body {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+    }
+
+    &-top {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        flex-wrap: wrap;
+
+        .username {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+    }
+
+    .full-name {
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .bio {
+        color: var(--text-secondary);
+        white-space: pre-wrap;
+    }
+
+    .stats {
+        display: flex;
+        gap: var(--space-6);
+        margin-top: var(--space-2);
+
+        .stat {
+            color: var(--text-secondary);
+            text-decoration: none;
+
+            strong {
+                color: var(--text-primary);
+            }
+
+            &:hover {
+                color: var(--text-primary);
+            }
+        }
+    }
+
+    .privacy-note {
+        color: var(--text-tertiary);
+        font-size: 0.85rem;
+        margin-top: var(--space-2);
+    }
+}
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+
+    &-item {
+        aspect-ratio: 1 / 1;
+        background: var(--surface-sunken);
+        overflow: hidden;
+    }
+}
+
+.profile-grid-state {
+    text-align: center;
+    color: var(--text-secondary);
+    padding-block: var(--space-12);
+    border: 1px dashed var(--border-subtle);
+    border-radius: var(--radius-md);
+}
+
+.follow-list-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.follow-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.follow-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding-block: var(--space-2);
+
+    &-user {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        min-width: 0;
+        text-decoration: none;
+
+        img {
+            width: 2.5rem;
+            aspect-ratio: 1 / 1;
+            border-radius: var(--radius-full);
+            flex-shrink: 0;
+        }
+
+        > span {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+
+            .username {
+                color: var(--text-primary);
+                font-weight: 600;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .full-name {
+                color: var(--text-secondary);
+                font-size: 0.85rem;
+            }
+        }
+    }
+
+    &-actions {
+        display: flex;
+        gap: var(--space-2);
+        flex-shrink: 0;
+    }
+}
+
+// Edit Profile — extends auth/style/form.scss's .form-container/form/input base
+.edit-profile-form {
+    width: min(90vw, 420px);
+
+    .field-label {
+        color: var(--text-secondary);
+        font-size: 0.85rem;
+        margin-bottom: calc(var(--space-1) * -1);
+    }
+
+    textarea {
+        border: none;
+        outline: none;
+        padding-inline: 1.5rem;
+        padding-block: 1rem;
+        border-radius: var(--radius-md);
+        font: inherit;
+        resize: vertical;
+        color: #333;
+    }
+
+    .checkbox-field {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        color: var(--text-secondary);
+
+        input {
+            width: auto;
+            padding: 0;
+        }
+    }
+}
+
+.edit-profile-actions {
+    display: flex;
+    gap: var(--space-3);
+    justify-content: flex-end;
+}

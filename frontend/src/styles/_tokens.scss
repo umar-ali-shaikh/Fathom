@@ -1,0 +1,77 @@
+// Fathom design tokens — see docs/product-spec/01-foundation.md §8 and
+// docs/product-spec/03-frontend.md §1 for the source spec.
+// CSS custom properties (not SCSS variables) so theme switching is a
+// runtime attribute toggle, not a build-time branch.
+
+@mixin dark-tokens {
+    --surface-canvas: #15140F;
+    --surface-raised: #1F1E18;
+    --surface-sunken: #0E0D09;
+    --border-subtle: #2C2A21;
+    --text-primary: #F5F3EC;
+    --text-secondary: #A8A493;
+    --text-tertiary: #6E6B5C;
+    --accent: #E08249;
+    --accent-on: #1C1B16;
+    --success: #4FAE73;
+    --warning: #D9A03F;
+    --danger: #E2634B;
+    --info: #5C9AD9;
+}
+
+:root,
+:root[data-theme="light"] {
+    --surface-canvas: #FAF9F6;
+    --surface-raised: #FFFFFF;
+    --surface-sunken: #F0EEE8;
+    --border-subtle: #E4E1D8;
+    --text-primary: #1C1B16;
+    --text-secondary: #5C594C;
+    --text-tertiary: #8A8674;
+    --accent: #C9622A;
+    --accent-on: #FFFFFF;
+    --success: #2E7D4F;
+    --warning: #B8862B;
+    --danger: #C1432E;
+    --info: #2E6BA8;
+
+    // spacing scale
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-12: 48px;
+    --space-16: 64px;
+
+    // shape + elevation
+    --radius-sm: 6px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-full: 999px;
+    --shadow-float: 0 4px 16px rgba(28, 27, 22, 0.08);
+
+    // motion
+    --motion-micro: 150ms ease-out;
+    --motion-sheet: 250ms ease-in-out;
+    --motion-screen: 400ms ease-in-out;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        @include dark-tokens;
+    }
+}
+
+:root[data-theme="dark"] {
+    @include dark-tokens;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --motion-micro: 0ms;
+        --motion-sheet: 0ms;
+        --motion-screen: 0ms;
+    }
+}

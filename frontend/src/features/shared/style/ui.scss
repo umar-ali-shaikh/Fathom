@@ -1,0 +1,186 @@
+// Shared UI primitives — Avatar, Skeleton, EmptyState, TabBar.
+// Built on the tokens in styles/_tokens.scss, no raw hex here.
+
+.avatar {
+    display: inline-flex;
+    flex-shrink: 0;
+    border-radius: var(--radius-full);
+    overflow: hidden;
+
+    img {
+        width: 100%;
+        height: 100%;
+        border-radius: var(--radius-full);
+    }
+
+    &-fallback {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--accent);
+        color: var(--accent-on);
+        font-weight: 600;
+    }
+
+    &-sm {
+        width: 1.75rem;
+        aspect-ratio: 1 / 1;
+        font-size: 0.7rem;
+    }
+
+    &-md {
+        width: 2.25rem;
+        aspect-ratio: 1 / 1;
+        font-size: 0.85rem;
+    }
+
+    &-lg {
+        width: 3.25rem;
+        aspect-ratio: 1 / 1;
+        font-size: 1.1rem;
+    }
+
+    &-xl {
+        width: 5rem;
+        aspect-ratio: 1 / 1;
+        font-size: 1.6rem;
+    }
+
+    &-ringed {
+        box-shadow: 0 0 0 2px var(--surface-canvas), 0 0 0 4px var(--accent);
+    }
+}
+
+.skeleton {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    background: var(--surface-sunken);
+    border-radius: var(--radius-sm);
+
+    &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--text-tertiary) 18%, transparent), transparent);
+        animation: skeleton-shimmer 1.5s infinite;
+    }
+
+    &-avatar {
+        border-radius: var(--radius-full);
+        width: 2.25rem;
+        aspect-ratio: 1 / 1;
+    }
+
+    &-text {
+        height: 0.6rem;
+        border-radius: var(--radius-sm);
+    }
+
+    &-block {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+    }
+}
+
+@keyframes skeleton-shimmer {
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(100%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skeleton::after {
+        animation: none;
+    }
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.5rem;
+    padding: 3.5rem 1.5rem;
+    color: var(--text-secondary);
+
+    &-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+        color: var(--text-tertiary);
+        margin-bottom: 0.25rem;
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    &-title {
+        color: var(--text-primary);
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    &-description {
+        font-size: 0.85rem;
+        max-width: 32ch;
+        line-height: 1.5;
+    }
+}
+
+.tab-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0.5rem 0.5rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--border-subtle);
+    background: var(--surface-canvas);
+
+    &-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.75rem;
+        height: 2.75rem;
+        border-radius: var(--radius-md);
+        color: var(--text-tertiary);
+        text-decoration: none;
+
+        svg {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+        &:hover {
+            color: var(--text-primary);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        &.active {
+            color: var(--accent);
+        }
+
+        .avatar {
+            width: 1.6rem;
+            aspect-ratio: 1 / 1;
+        }
+
+        &.active .avatar {
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+    }
+}
