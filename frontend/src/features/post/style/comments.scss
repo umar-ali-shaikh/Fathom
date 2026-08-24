@@ -1,6 +1,6 @@
 .post-detail-page {
     width: 100%;
-    padding-block: var(--space-4);
+    padding: var(--space-4);
 }
 
 .comment-list {
@@ -24,11 +24,16 @@
         border: 1px solid var(--border-subtle);
         background: var(--surface-sunken);
         color: var(--text-primary);
-        border-radius: var(--radius-md);
-        padding: var(--space-2) var(--space-3);
+        border-radius: var(--radius-full);
+        padding: var(--space-2) var(--space-4);
 
         &::placeholder {
             color: var(--text-tertiary);
+        }
+
+        &:focus {
+            outline: none;
+            border-color: var(--accent);
         }
     }
 }
@@ -54,12 +59,7 @@
 
     .comment-avatar {
         flex-shrink: 0;
-
-        img {
-            width: 2rem;
-            aspect-ratio: 1 / 1;
-            border-radius: var(--radius-full);
-        }
+        display: flex;
     }
 
     .comment-body {

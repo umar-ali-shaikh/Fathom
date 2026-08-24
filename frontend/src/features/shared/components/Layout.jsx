@@ -15,6 +15,7 @@ const tabs = (user) => [
   {
     to: "/profile",
     label: "Profile",
+    variant: "avatar",
     renderIcon: (active) => (
       <Avatar src={user?.profileImage} name={user?.username} size="sm" ringed={active} />
     ),

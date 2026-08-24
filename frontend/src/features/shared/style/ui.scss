@@ -6,6 +6,7 @@
     flex-shrink: 0;
     border-radius: var(--radius-full);
     overflow: hidden;
+    position: relative;
 
     img {
         width: 100%;
@@ -19,9 +20,9 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: var(--accent);
+        background: var(--brand-gradient);
         color: var(--accent-on);
-        font-weight: 600;
+        font-weight: 700;
     }
 
     &-sm {
@@ -49,7 +50,22 @@
     }
 
     &-ringed {
-        box-shadow: 0 0 0 2px var(--surface-canvas), 0 0 0 4px var(--accent);
+        overflow: visible;
+
+        &::before {
+            content: "";
+            position: absolute;
+            inset: -4px;
+            border-radius: var(--radius-full);
+            background: var(--brand-gradient);
+            z-index: -1;
+        }
+
+        img,
+        .avatar-fallback {
+            box-sizing: border-box;
+            border: 2px solid var(--surface-canvas);
+        }
     }
 }
 
@@ -137,31 +153,37 @@
 
 .tab-bar {
     position: sticky;
-    bottom: 0;
+    bottom: var(--space-4);
     z-index: 10;
     display: flex;
     align-items: center;
-    justify-content: space-around;
-    padding: 0.5rem 0.5rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
-    border-top: 1px solid var(--border-subtle);
-    background: var(--surface-canvas);
+    justify-content: center;
+    gap: var(--space-2);
+    width: fit-content;
+    margin: 0 auto calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+    padding: var(--space-2);
+    border-radius: var(--radius-full);
+    background: var(--surface-raised);
+    box-shadow: var(--shadow-float);
 
     &-item {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 2.75rem;
-        height: 2.75rem;
-        border-radius: var(--radius-md);
+        width: 3rem;
+        height: 3rem;
+        border-radius: var(--radius-full);
         color: var(--text-tertiary);
         text-decoration: none;
+        transition: background var(--motion-micro), transform var(--motion-micro);
 
         svg {
             width: 1.5rem;
             height: 1.5rem;
+            color: inherit;
         }
 
-        &:hover {
+        &:hover svg {
             color: var(--text-primary);
         }
 
@@ -170,17 +192,18 @@
             outline-offset: 2px;
         }
 
-        &.active {
-            color: var(--accent);
+        &.active:not(&--avatar) {
+            background: var(--brand-gradient);
+            transform: scale(1.05);
+        }
+
+        &.active:not(&--avatar) svg {
+            color: #fff;
         }
 
         .avatar {
-            width: 1.6rem;
+            width: 1.75rem;
             aspect-ratio: 1 / 1;
-        }
-
-        &.active .avatar {
-            box-shadow: 0 0 0 2px var(--accent);
         }
     }
 }

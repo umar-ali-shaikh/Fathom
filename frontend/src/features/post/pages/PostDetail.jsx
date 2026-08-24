@@ -3,6 +3,7 @@ import { useParams } from "react-router";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { usePostDetail } from "../hook/usePostDetail";
 import Post from "../components/Post";
+import PostSkeleton from "../components/PostSkeleton";
 import CommentList from "../components/CommentList";
 import "../style/post.scss";
 import "../style/comments.scss";
@@ -18,8 +19,8 @@ const PostDetail = () => {
 
   if (loading && !post) {
     return (
-      <main className="feed-page">
-        <p className="feed-status">Loading post...</p>
+      <main className="post-detail-page">
+        <PostSkeleton />
       </main>
     );
   }

@@ -1,10 +1,11 @@
 import { Link } from "react-router";
+import Avatar from "../../shared/components/ui/Avatar";
 
 const CommentRow = ({ comment, canDelete, onDelete, children }) => {
   return (
     <div className="comment-row">
       <Link to={`/u/${comment.user.username}`} className="comment-avatar">
-        <img src={comment.user.profileImage} alt="" />
+        <Avatar src={comment.user.profileImage} name={comment.user.username} size="sm" />
       </Link>
       <div className="comment-body">
         <p>

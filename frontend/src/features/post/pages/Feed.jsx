@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import Post from "../components/Post";
+import PostSkeleton from "../components/PostSkeleton";
 import { usePost } from "../hook/usePost";
+import EmptyState from "../../shared/components/ui/EmptyState";
 import "../style/post.scss";
 
 const Feed = () => {
@@ -13,7 +15,12 @@ const Feed = () => {
   if (loading && !feed) {
     return (
       <main className="feed-page">
-        <p className="feed-status">Loading feed...</p>
+        <div className="feed">
+          <div className="posts">
+            <PostSkeleton />
+            <PostSkeleton />
+          </div>
+        </div>
       </main>
     );
   }
@@ -32,7 +39,10 @@ const Feed = () => {
   if (!feed || feed.length === 0) {
     return (
       <main className="feed-page">
-        <p className="feed-status">No posts yet. Follow people to see their posts here.</p>
+        <EmptyState
+          title="No posts yet"
+          description="Follow people to see their posts here."
+        />
       </main>
     );
   }

@@ -54,7 +54,7 @@ const Register = () => {
             required
           />
           {error && <p className="form-error">{error}</p>}
-          <button type="submit" disabled={loading}>
+          <button type="submit" className="button primary-button" disabled={loading}>
             {loading ? "Creating account..." : "Register"}
           </button>
         </form>

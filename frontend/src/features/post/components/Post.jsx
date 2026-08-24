@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { useLikeToggle } from "../hook/useLikeToggle";
+import Avatar from "../../shared/components/ui/Avatar";
 
 const Post = ({ user, post, linkToDetail = true }) => {
   const { isLiked, likesCount, isSubmitting, handleToggleLike } = useLikeToggle(post);
@@ -9,19 +10,21 @@ const Post = ({ user, post, linkToDetail = true }) => {
   return (
     <div className="post">
       <div className="user">
-        <Link to={`/u/${user.username}`} className="img-wrapper">
-          <img src={user.profileImage} alt="" />
+        <Link to={`/u/${user.username}`} className="post-avatar-link">
+          <Avatar src={user.profileImage} name={user.username} size="md" />
         </Link>
         <Link to={`/u/${user.username}`} className="username-link">
           <p>{user.username}</p>
         </Link>
       </div>
       {linkToDetail ? (
-        <Link to={detailHref}>
+        <Link to={detailHref} className="post-media">
           <img src={post.imgUrl} alt="" />
         </Link>
       ) : (
-        <img src={post.imgUrl} alt="" />
+        <div className="post-media">
+          <img src={post.imgUrl} alt="" />
+        </div>
       )}
       <div className="icons">
         <div className="left">

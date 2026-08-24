@@ -3,6 +3,7 @@ import { useParams } from "react-router";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { useProfile } from "../hook/useProfile";
 import ProfileHeader from "../components/ProfileHeader";
+import ProfileHeaderSkeleton from "../components/ProfileHeaderSkeleton";
 import ProfileGrid from "../components/ProfileGrid";
 import "../style/profile.scss";
 
@@ -21,7 +22,7 @@ const Profile = () => {
   if (loading && !profile) {
     return (
       <main className="profile-page">
-        <p className="profile-status">Loading profile...</p>
+        <ProfileHeaderSkeleton />
       </main>
     );
   }

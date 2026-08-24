@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import Avatar from "../../shared/components/ui/Avatar";
 
 const FOLLOW_BUTTON_LABEL = {
   accepted: "Following",
@@ -25,9 +26,8 @@ const ProfileHeader = ({ profile, onFollowToggle, followPending }) => {
 
   return (
     <header className="profile-header">
-      <div className="avatar-wrapper">
-        <img src={profileImage} alt="" />
-      </div>
+      <Avatar src={profileImage} name={username} size="xl" ringed />
+
 
       <div className="profile-header-body">
         <div className="profile-header-top">
