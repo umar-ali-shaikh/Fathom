@@ -10,6 +10,12 @@ const postSchema = new mongoose.Schema({
         type: String,
         required: [true, "imgUrl is required for creating an post"]
     },
+    imageId: {
+        // ImageKit fileId, kept so the stored image can be removed from
+        // ImageKit when the post is deleted instead of becoming orphaned.
+        type: String,
+        select: false,
+    },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "users",

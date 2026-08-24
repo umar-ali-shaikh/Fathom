@@ -1,27 +1,18 @@
-
-
 const jwt = require("jsonwebtoken");
+const { AuthenticationError } = require("../utils/errors");
 
-async function authMiddleware(req, res, next) {
+function authMiddleware(req, res, next) {
     const token = req.cookies.token;
 
     if (!token) {
-        return res.status(401).json({
-            message: "Unauthorized Access"
-        });
+        return next(new AuthenticationError("Unauthorized Access"));
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-        req.user = decoded;
-
+        req.user = jwt.verify(token, process.env.JWT_SECRET);
         next();
-
     } catch (err) {
-        return res.status(401).json({
-            message: "Invalid Token"
-        });
+        next(new AuthenticationError("Invalid or expired session"));
     }
 }
 

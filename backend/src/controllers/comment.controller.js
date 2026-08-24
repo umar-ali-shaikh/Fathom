@@ -1,8 +1,12 @@
 const commentModel = require("../model/comment.model");
 const postModel = require("../model/post.model");
 const followModel = require("../model/follow.model");
+const asyncHandler = require("../utils/asyncHandler");
+const serializeComment = require("../utils/serializeComment");
+const { recordActivity } = require("../services/activity.service");
+const { NotFoundError, AuthorizationError } = require("../utils/errors");
 
-const COMMENT_USER_FIELDS = "username profileImage";
+const COMMENT_USER_FIELDS = "username fullName profileImage isPrivate";
 
 /**
  * Shared gate: comments are only visible/writable to people who could see
@@ -12,7 +16,7 @@ async function assertPostVisible(requesterId, postId) {
     const post = await postModel.findById(postId).populate("user", "isPrivate");
 
     if (!post) {
-        return { error: { status: 404, message: "Post not found" } };
+        throw new NotFoundError("Post not found");
     }
 
     const isOwnPost = post.user._id.toString() === requesterId;
@@ -25,11 +29,11 @@ async function assertPostVisible(requesterId, postId) {
         });
 
         if (!followRecord) {
-            return { error: { status: 403, message: "This account is private." } };
+            throw new AuthorizationError("This account is private.");
         }
     }
 
-    return { post };
+    return post;
 }
 
 /**
@@ -37,116 +41,124 @@ async function assertPostVisible(requesterId, postId) {
  * No parent query -> top-level comments, each carrying a repliesCount.
  * With parent query -> the flat reply thread for that one comment.
  */
-async function getCommentsController(req, res) {
-    try {
-        const { postId } = req.params;
-        const { parent } = req.query;
+const getCommentsController = asyncHandler(async function getCommentsController(req, res) {
+    const { postId } = req.params;
+    const { parent } = req.query;
 
-        const { error } = await assertPostVisible(req.user.id, postId);
-        if (error) return res.status(error.status).json({ message: error.message });
+    await assertPostVisible(req.user.id, postId);
 
-        const comments = await commentModel
-            .find({ post: postId, parent: parent || null })
-            .sort({ createdAt: 1 })
-            .populate("user", COMMENT_USER_FIELDS)
-            .lean();
+    const comments = await commentModel
+        .find({ post: postId, parent: parent || null })
+        .sort({ createdAt: 1 })
+        .populate("user", COMMENT_USER_FIELDS)
+        .lean();
 
-        let repliesCountByParent = {};
-        if (!parent) {
-            const topLevelIds = comments.map((c) => c._id);
-            const counts = await commentModel.aggregate([
-                { $match: { parent: { $in: topLevelIds }, isDeleted: false } },
-                { $group: { _id: "$parent", count: { $sum: 1 } } },
-            ]);
-            repliesCountByParent = Object.fromEntries(
-                counts.map((c) => [c._id.toString(), c.count])
-            );
-        }
+    let repliesCountByParent = {};
+    if (!parent) {
+        const topLevelIds = comments.map((c) => c._id);
+        const counts = await commentModel.aggregate([
+            { $match: { parent: { $in: topLevelIds }, isDeleted: false } },
+            { $group: { _id: "$parent", count: { $sum: 1 } } },
+        ]);
+        repliesCountByParent = Object.fromEntries(
+            counts.map((c) => [c._id.toString(), c.count])
+        );
+    }
 
-        const result = comments.map((c) => ({
+    const items = comments.map((c) =>
+        serializeComment({
             ...c,
-            body: c.isDeleted ? "" : c.body,
-            ...(parent ? {} : { repliesCount: repliesCountByParent[c._id.toString()] || 0 }),
-        }));
+            repliesCount: parent ? undefined : repliesCountByParent[c._id.toString()] || 0,
+        })
+    );
 
-        return res.status(200).json({ comments: result });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: "Internal Server Error" });
+    return res.status(200).json({ items });
+});
+
+const createCommentController = asyncHandler(async function createCommentController(req, res) {
+    const { postId } = req.params;
+    const { body, parent } = req.body;
+
+    const post = await assertPostVisible(req.user.id, postId);
+
+    if (parent) {
+        const parentComment = await commentModel.findOne({ _id: parent, post: postId });
+        if (!parentComment) {
+            throw new NotFoundError("Comment being replied to no longer exists");
+        }
     }
-}
 
-async function createCommentController(req, res) {
-    try {
-        const { postId } = req.params;
-        const { body, parent } = req.body;
+    const comment = await commentModel.create({
+        post: postId,
+        user: req.user.id,
+        parent: parent || null,
+        body,
+    });
 
-        if (!body || !body.trim()) {
-            return res.status(400).json({ message: "Comment can't be empty" });
-        }
+    await postModel.findByIdAndUpdate(postId, { $inc: { commentsCount: 1 } });
 
-        const { error } = await assertPostVisible(req.user.id, postId);
-        if (error) return res.status(error.status).json({ message: error.message });
+    await comment.populate("user", COMMENT_USER_FIELDS);
 
-        if (parent) {
-            const parentComment = await commentModel.findOne({ _id: parent, post: postId });
-            if (!parentComment) {
-                return res.status(404).json({ message: "Comment being replied to no longer exists" });
-            }
-        }
+    await recordActivity({
+        type: "comment",
+        actor: req.user.id,
+        recipient: post.user._id,
+        post: postId,
+        commentPreview: comment.body.slice(0, 140),
+    });
 
-        const comment = await commentModel.create({
-            post: postId,
-            user: req.user.id,
-            parent: parent || null,
-            body: body.trim(),
-        });
+    return res.status(201).json({
+        message: "Comment posted",
+        comment: serializeComment(comment.toObject()),
+    });
+});
 
-        await postModel.findByIdAndUpdate(postId, { $inc: { commentsCount: 1 } });
+const editCommentController = asyncHandler(async function editCommentController(req, res) {
+    const { commentId } = req.params;
+    const { body } = req.body;
 
-        await comment.populate("user", COMMENT_USER_FIELDS);
-
-        return res.status(201).json({
-            message: "Comment posted",
-            comment,
-        });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: "Internal Server Error" });
+    const comment = await commentModel.findById(commentId);
+    if (!comment || comment.isDeleted) {
+        throw new NotFoundError("Comment not found");
     }
-}
-
-async function deleteCommentController(req, res) {
-    try {
-        const { commentId } = req.params;
-
-        const comment = await commentModel.findById(commentId).populate("post", "user");
-        if (!comment || comment.isDeleted) {
-            return res.status(404).json({ message: "Comment not found" });
-        }
-
-        const isCommentOwner = comment.user.toString() === req.user.id;
-        const isPostOwner = comment.post.user.toString() === req.user.id;
-
-        if (!isCommentOwner && !isPostOwner) {
-            return res.status(403).json({ message: "You can't delete this comment" });
-        }
-
-        comment.isDeleted = true;
-        comment.body = "";
-        await comment.save();
-
-        await postModel.findByIdAndUpdate(comment.post._id, { $inc: { commentsCount: -1 } });
-
-        return res.status(200).json({ message: "Comment deleted" });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ message: "Internal Server Error" });
+    if (comment.user.toString() !== req.user.id) {
+        throw new AuthorizationError("You can't edit this comment");
     }
-}
+
+    comment.body = body;
+    await comment.save();
+    await comment.populate("user", COMMENT_USER_FIELDS);
+
+    return res.status(200).json({ message: "Comment updated", comment: serializeComment(comment.toObject()) });
+});
+
+const deleteCommentController = asyncHandler(async function deleteCommentController(req, res) {
+    const { commentId } = req.params;
+
+    const comment = await commentModel.findById(commentId).populate("post", "user");
+    if (!comment || comment.isDeleted) {
+        throw new NotFoundError("Comment not found");
+    }
+
+    const isCommentOwner = comment.user.toString() === req.user.id;
+    const isPostOwner = comment.post.user.toString() === req.user.id;
+
+    if (!isCommentOwner && !isPostOwner) {
+        throw new AuthorizationError("You can't delete this comment");
+    }
+
+    comment.isDeleted = true;
+    comment.body = "";
+    await comment.save();
+
+    await postModel.findByIdAndUpdate(comment.post._id, { $inc: { commentsCount: -1 } });
+
+    return res.status(200).json({ message: "Comment deleted" });
+});
 
 module.exports = {
     getCommentsController,
     createCommentController,
+    editCommentController,
     deleteCommentController,
 };

@@ -2,56 +2,67 @@ const express = require("express");
 const postController = require("../controllers/post.controller");
 const postRouter = express.Router();
 
-const multer = require("multer");
-const upload = multer({ storage: multer.memoryStorage() });
+const { validateCaption, validateCreatePost } = require("../validators/post.validator");
 
 const authMiddleware = require("../middleware/auth.middleware")
 
+postRouter.use(authMiddleware);
+
 /**
- * POST /api/posts [protected]
- * - req.body = {caption, image-file}
+ * POST /api/post [protected]
+ * body: { caption?, imageUrls: string[] } — image already uploaded via POST /api/upload.
  */
-
-postRouter.post("/", upload.single("image"), authMiddleware, postController.createPostController);
+postRouter.post("/", validateCreatePost, postController.createPostController);
 
 
 /**
- * GET /api/posts  [protected]
+ * GET /api/post [protected]
  */
-
-postRouter.get("/", authMiddleware, postController.getPostController);
-
+postRouter.get("/", postController.getPostController);
 
 /**
- * GET /api/posts/details/:postid
- * - return an details about specific post with the id. also check whether the post belongs to the user that the request come from
+ * GET /api/post/feed [protected]
  */
-
-postRouter.get("/details/:postId", authMiddleware, postController.getPostDetailController)
-
+postRouter.get("/feed", postController.getFeedController)
 
 /**
- * @route POST /api/posts/like/:postId
+ * GET /api/post/explore [protected]
  */
-
-postRouter.post("/like/:postId", authMiddleware, postController.likePostController)
+postRouter.get("/explore", postController.getExploreController)
 
 /**
- * @route DELETE /api/posts/like/:postId
+ * GET /api/post/details/:postId
+ * - return details about a specific post, enforcing the visibility rules
  */
-
-postRouter.delete("/like/:postId", authMiddleware, postController.unlikePostController)
+postRouter.get("/details/:postId", postController.getPostDetailController)
 
 /**
- * GET /api/posts/feed
+ * @route PATCH /api/post/:postId [protected]
+ * @description Edit the caption of your own post
  */
-postRouter.get("/feed", authMiddleware, postController.getFeedController)
+postRouter.patch("/:postId", validateCaption, postController.updatePostController)
 
 /**
- * GET /api/posts/user/:username [protected]
+ * @route DELETE /api/post/:postId [protected]
+ * @description Delete your own post (and its comments/likes)
+ */
+postRouter.delete("/:postId", postController.deletePostController)
+
+/**
+ * @route POST /api/post/like/:postId
+ */
+postRouter.post("/like/:postId", postController.likePostController)
+
+/**
+ * @route DELETE /api/post/like/:postId
+ */
+postRouter.delete("/like/:postId", postController.unlikePostController)
+
+/**
+ * GET /api/post/user/:username [protected]
  * - privacy-aware grid feed for a profile
  */
-postRouter.get("/user/:username", authMiddleware, postController.getUserPostsController)
+postRouter.get("/user/:username", postController.getUserPostsController)
 
 
 module.exports = postRouter

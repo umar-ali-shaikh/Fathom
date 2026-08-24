@@ -13,14 +13,33 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: [true, "Password is required"],
-    select: false,
+        // Not required for Google accounts, which authenticate via OAuth and
+        // never have a local password.
+        required: [
+            function passwordRequired() { return this.authProvider === "local"; },
+            "Password is required"
+        ],
+        select: false,
+    },
+    authProvider: {
+        type: String,
+        enum: ["local", "google"],
+        default: "local",
+    },
+    googleId: {
+        type: String,
+        unique: true,
+        sparse: true,
     },
     bio: String,
     fullName: String,
     isPrivate: {
         type: Boolean,
         default: false,
+    },
+    activityNotifications: {
+        type: Boolean,
+        default: true,
     },
     profileImage: {
         type: String,
