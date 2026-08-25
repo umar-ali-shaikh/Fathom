@@ -1,7 +1,18 @@
 {
+  "name": "fathom-backend",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js"
+  },
   "dependencies": {
     "@imagekit/nodejs": "^7.9.1",
     "bcrypt": "^6.0.0",
+    "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
@@ -12,11 +23,9 @@
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^7.4.0",
     "mongoose": "^9.7.3",
-    "multer": "^2.2.0",
-    "nodemon": "^3.1.14"
+    "multer": "^2.2.0"
   },
-  "scripts": {
-    "dev": "nodemon server.js",
-    "start": "node server.js"
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }

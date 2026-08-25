@@ -2,6 +2,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const helmet = require("helmet");
+const compression = require("compression");
 
 const authRouter = require("./routes/auth.routes");
 const postRouter = require("./routes/post.routes");
@@ -16,6 +17,7 @@ const { errorMiddleware, notFoundMiddleware } = require("./middleware/error.midd
 const app = express();
 
 app.use(helmet());
+app.use(compression());
 app.use(express.json());
 app.use(cookieParser());
 
@@ -45,6 +47,10 @@ app.use(cors({
         return callback(new Error("Not allowed by CORS"));
     },
 }))
+
+app.get("/api/health", (req, res) => {
+    res.status(200).json({ status: "ok" });
+});
 
 // Routes
 app.use("/api/auth", authRouter);
