@@ -22,13 +22,10 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Allowlisted origins only — reflecting arbitrary origins while
-// `credentials: true` is effectively wildcard-with-cookies. fathom-navigator
-// (the actual frontend) defaults to 8080 via @lovable.dev/vite-tanstack-config's
-// sandbox port detection; 5173-5175 are kept too in case that changes.
-// CLIENT_URL covers the deployed frontend.
+// `credentials: true` is effectively wildcard-with-cookies. frontend/ (the
+// Vite dev server) defaults to 5173; 5174/5175 are kept as fallbacks for
+// when that port is already taken. CLIENT_URL covers the deployed frontend.
 const DEV_ORIGINS = [
-    "http://localhost:8080",
-    "http://localhost:8081",
     "http://localhost:5173",
     "http://localhost:5174",
     "http://localhost:5175",
