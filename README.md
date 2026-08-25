@@ -12,7 +12,7 @@ This project is a two-part application:
 - **`backend/`** — a REST API built with Express and MongoDB (Mongoose) that
   handles authentication, posts, comments, likes, follows, stories, reels,
   and activity notifications.
-- **`fathom-navigator/`** — the web client, built with React 19, TanStack
+- **`frontend/`** — the web client, built with React 19, TanStack
   Router/Start, and Tailwind CSS.
 
 ## Key Features
@@ -56,9 +56,10 @@ Instagram MERN Stack Project/
 │   │   ├── validators/      Request validation
 │   │   └── services/        Business logic / integrations
 │   └── server.js
-└── fathom-navigator/        Web client (React + TanStack Start)
+└── frontend/                Web client (React + TanStack Start)
     └── src/
         ├── routes/          Pages (feed, explore, reels, profile, settings, auth)
+        ├── features/        Feature modules (post, profile, reel, story)
         ├── lib/api/         API client, endpoints, and type contracts
         └── providers/       App-wide context (auth, etc.)
 ```
@@ -77,7 +78,21 @@ Instagram MERN Stack Project/
 ```bash
 cd backend
 npm install
-cp .env.example .env   # fill in MONGO_URI, JWT_SECRET, IMAGEKIT_PRIVATE_KEY, GOOGLE_* values
+```
+
+Create a `backend/.env` file with:
+
+```
+MONGO_URI=your-mongodb-connection-string
+JWT_SECRET=your-jwt-secret
+IMAGEKIT_PRIVATE_KEY=your-imagekit-private-key
+GOOGLE_CLIENT_ID=your-google-oauth-client-id
+CLIENT_URL=http://localhost:5173
+PORT=3000
+NODE_ENV=development
+```
+
+```bash
 npm run dev
 ```
 
@@ -86,7 +101,7 @@ The API runs at `http://localhost:3000` by default, mounted under `/api`.
 ### Frontend setup
 
 ```bash
-cd fathom-navigator
+cd frontend
 npm install
 echo "VITE_API_BASE_URL=http://localhost:3000/api" > .env.local
 npm run dev
