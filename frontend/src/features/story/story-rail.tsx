@@ -96,7 +96,10 @@ export function StoryRail({ onCreate }: { onCreate?: () => void }) {
   const tray = useQuery({ queryKey: ["stories"], queryFn: () => storyService.tray() });
 
   return (
-    <section aria-label="Statuses" className="border-b border-border md:rounded-2xl md:border">
+    <section
+      aria-label="Statuses"
+      className="mb-4 border-b border-border md:mb-6 md:rounded-2xl md:border"
+    >
       <ul className="flex gap-4 overflow-x-auto px-4 py-3">
         <li className="shrink-0">
           <button

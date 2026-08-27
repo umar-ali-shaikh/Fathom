@@ -89,7 +89,7 @@ export function PostCard({ post, onChanged }: { post: Post; onChanged?: () => vo
   }
 
   return (
-    <article className="border-b border-border bg-surface md:mb-6 md:rounded-2xl md:border md:shadow-[var(--shadow-soft)]">
+    <article className="mb-4 border-b border-border bg-surface md:mb-6 md:rounded-2xl md:border md:shadow-[var(--shadow-soft)]">
       <header className="flex items-center gap-3 px-4 py-3">
         <Link to="/u/$username" params={{ username: post.author?.username ?? "" }}>
           <UserAvatar user={post.author} size="sm" />
@@ -171,7 +171,7 @@ export function PostCard({ post, onChanged }: { post: Post; onChanged?: () => vo
 
 export function PostCardSkeleton() {
   return (
-    <div className="border-b border-border bg-surface md:mb-6 md:rounded-2xl md:border">
+    <div className="mb-4 border-b border-border bg-surface md:mb-6 md:rounded-2xl md:border">
       <div className="flex items-center gap-3 px-4 py-3">
         <Skeleton className="size-9 rounded-full" />
         <div className="space-y-1.5">

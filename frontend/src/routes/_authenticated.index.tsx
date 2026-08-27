@@ -31,7 +31,10 @@ function ReelsRail() {
   if (items.length === 0) return null;
 
   return (
-    <section aria-label="Reels" className="border-b border-border md:mt-6 md:rounded-2xl md:border">
+    <section
+      aria-label="Reels"
+      className="mb-4 border-b border-border md:mb-6 md:rounded-2xl md:border"
+    >
       <div className="flex items-center justify-between px-4 pt-3">
         <h2 className="text-sm font-semibold">Reels</h2>
         <Link to="/reels" className="text-xs font-medium text-primary hover:underline">
